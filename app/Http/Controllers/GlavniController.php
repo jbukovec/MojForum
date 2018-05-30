@@ -9,6 +9,7 @@ use App\Tema;
 use App\Komentar;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class GlavniController extends Controller
 {
@@ -105,10 +106,8 @@ class GlavniController extends Controller
     }
     public function pretrazi_teme(Request $request)
     {
-        $teme = Tema::search($request->q)->paginate(1)->appends($request->query());
+        $teme = Tema::search($request->q)->paginate(25)->appends($request->only('q'));
         $teme->load('komentari', 'user');
-        //$pretraga = Tema::search($request->q)->get();
-        //$teme = Tema::with('user', 'komentari')->whereIn('id', $pretraga->pluck('id'))->paginate(25)->appends(request()->query());
         return view('teme')->with('teme', $teme)->with('id', $request->q);
     }
 }
