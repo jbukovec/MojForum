@@ -20,7 +20,7 @@ class GlavniController extends Controller
 
     public function kategorije()
     {
-        $kategorije = Kategorija::with('teme')->get();
+        $kategorije = Kategorija::with('teme')->orderBy('naziv_kategorije')->get();
         return view('welcome')->with('kategorije', $kategorije);
     }
     public function teme_kategorije($url)
@@ -34,10 +34,10 @@ class GlavniController extends Controller
         $teme = Tema::with('user','komentari','kategorija')->orderBy('created_at', 'desc')->paginate(25); //desc je novije
         return view('teme')->with('teme', $teme)->with('id', 0);
     }
-    public function komentari_teme($id)
-    {
-        $komentari= Komentar::with('user')->where('tema_id', $id)->orderBy('created_at', 'asc')->paginate(15);
-        $tema= Tema::findOrFail($id);
+    public function tema_komentari($slug)
+    {   
+        $tema= Tema::where('slug', $slug)->firstOrFail();
+        $komentari= Komentar::with('user')->where('tema_id', $tema->id)->orderBy('created_at', 'asc')->paginate(15);
         $context = ['komentari'=>$komentari, 'tema'=>$tema];
 
         if(Auth::check()){
@@ -47,7 +47,7 @@ class GlavniController extends Controller
                     array_push($komentari_ids, $komentar->id);
                 }
                 if (count($komentari_ids) > 0){
-                Komentar::where('tema_id', $id)->whereIn('id', $komentari_ids)->where('pogledano', false)->update(['pogledano' => true]);
+                Komentar::where('tema_id', $tema->id)->whereIn('id', $komentari_ids)->where('pogledano', false)->update(['pogledano' => true]);
             }
             }
         }
@@ -57,10 +57,9 @@ class GlavniController extends Controller
     public function kreiraj_temu(Request $request, $id)
     {
         Validator::make($request->all(), [
-            'naslov' => 'required|max:255',
-            'opis' => 'required',
+            'naslov' => 'required|max:190|unique:teme,naslov_teme',
         ], ['required' => 'Polje :attribute je obavezno.',
-            'max' => 'Naslov je prevelik! Maksimalno 255 zankova.'])->validate();
+            'max' => 'Naslov je prevelik! Maksimalno 190 znakova.'])->validate();
         $nova_tema = new Tema;
         $nova_tema->naslov_teme = $request->naslov;
         $nova_tema->opis_teme = $request->opis;
@@ -83,23 +82,28 @@ class GlavniController extends Controller
         $novi_komentar->save();
         return redirect()->back()->with('status', 'Komentar uspješno objavljen');
     }
-    public function teme_korisnika($id)
-    {
-        $teme = Tema::where('user_id', $id)->paginate(25);
-        $user = User::findOrFail($id);
+    public function teme_korisnika($slug)
+    {   
+        $user = User::where('slug', $slug)->firstOrFail();
+        $teme = Tema::with('komentari')->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(25);
+        $count_komentari = Komentar::where('user_id', $user->id)->count();
+
         $context = [
             'teme' => $teme,
+            'count_komentari' => $count_komentari,
             'user' => $user,
         ];
         return view('teme_korisnika')->with($context);
     }
 
-    public function komentari_korisnika($id)
+    public function komentari_korisnika($slug)
     {
-        $komentari = Komentar::with('tema')->where('user_id', $id)->paginate(25);
-        $user = User::findOrFail($id);
+        $user = User::where('slug', $slug)->firstOrFail();
+        $komentari = Komentar::with('tema.kategorija')->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(25);
+        $count_teme = Tema::where('user_id', $user->id)->count(); 
         $context = [
             'komentari' => $komentari,
+            'count_teme' => $count_teme,
             'user' => $user,
         ];
         return view('komentari_korisnika')->with($context);

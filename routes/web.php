@@ -16,16 +16,16 @@ use Illuminate\Http\Request;
 */
 
 Route::get('/', 'GlavniController@kategorije')->name('naslovna');
-Route::get('/teme/{url}','GlavniController@teme_kategorije')->name('teme');
+Route::get('/{url}/teme','GlavniController@teme_kategorije')->name('teme');
 Route::get('/zadnje_teme','GlavniController@zadnje_teme')->name('zadnje.teme');
-Route::get('tema/{id}/komentari','GlavniController@komentari_teme')->name('komentari_na_temu');
+Route::get('tema/{slug}','GlavniController@tema_komentari')->name('komentari_na_temu');
 Route::post('/kreiraj_temu/{id}','GlavniController@kreiraj_temu')->name('kreiraj_temu')->middleware('auth');
 Route::post('/ostavi_komentar/{id}','GlavniController@ostavi_komentar')->name('ostavi_komentar')->middleware('auth');
-Route::get('/korisnik/{id}/teme','GlavniController@teme_korisnika')->name('teme_korisnika');
-Route::get('/korisnik/{id}/komentari','GlavniController@komentari_korisnika')->name('komentari_korisnika');
+Route::get('/korisnik/{slug}','GlavniController@teme_korisnika')->name('teme_korisnika');
+Route::get('/korisnik/{slug}/komentari','GlavniController@komentari_korisnika')->name('komentari_korisnika');
 Route::get('/pretraga','GlavniController@pretrazi_teme')->name('pretrazi.teme');
 
-Route::get('komentari_zadnja/{id}', 'DashboardController@komentari_zadnja')->name('komentari.zadnja');
+Route::get('komentari_zadnja/{slug}', 'DashboardController@komentari_zadnja')->name('komentari.zadnja');
 
 Auth::routes();
 Route::get('/panel', 'DashboardController@panel')->name('panel');

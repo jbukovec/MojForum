@@ -85,7 +85,7 @@ return [
     ],
     'string'               => 'Polje :attribute mora biti string.',
     'timezone'             => 'Polje :attribute mora biti valjana zona.',
-    'unique'               => 'Vrijednost polje mora biti jedinstvena, :attribute se već koristi.',
+    'unique'               => 'Vrijednost unosa mora biti jedinstvena, :attribute već postoji.',
     'uploaded'             => 'Upload :attribute nije uspio .',
     'url'                  => 'Format :attribute nije valjan.',
 
@@ -122,6 +122,7 @@ return [
         'password' => 'lozinka',
         'current-password' => 'sadašnja lozinka',
         'new-password' => 'nova lozinka',
+        'image' => 'slike',
     ],
 
 ];

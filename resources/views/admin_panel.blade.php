@@ -1,4 +1,5 @@
-@extends('layouts.app') 
+@extends('layouts.app')
+@section('title', 'Admin panel')
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -21,10 +22,10 @@
                             @if (count($kategorije) > 0)
                             @foreach ($kategorije as $kategorija)
                             <div class="col-4 mt-2">  
-                            {!!Form::open(['route' => ['izbrisi.kategoriju', $kategorija->id], 'method' => 'DELETE'])!!}
+                            {!!Form::open(['class' => 'izbrisi','route' => ['izbrisi.kategoriju', $kategorija->id], 'method' => 'DELETE'])!!}
                             <h4>{{$kategorija->naziv_kategorije}}
                             <span>
-                            {{Form::submit('x', ['class' => 'ml-2 btn btn-danger', "data-toggle" => "tooltip", "data-placement" => "top", "title" => "Izbriši kategoriju!"])}}
+                            {{Form::button('<i class="fas fa-window-close"></i>', ['type' => 'submit', 'class' => 'ml-2 btn btn-danger', "data-toggle" => "tooltip", "data-placement" => "top", "title" => "Izbriši kategoriju!"])}}
                             </span></h4>
                             {!!Form::close()!!}
                             </div>                   
@@ -40,7 +41,11 @@
 </div>
 <script>
         $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();   
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $(".izbrisi").on("submit", function(){
+        return confirm("Jeste li sigurni?");
+    });  
         });
 </script>
 @endsection

@@ -1,14 +1,15 @@
-@extends('layouts.app') 
+@extends('layouts.app')
+@section('title', 'Profil korisnika : Komentari')
 @section('content')
 <div class="container">
     @include('includes.korisnik')
-    <div class="my-3 p-3 bg-white rounded box-shadow">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
-                <a class="nav-link" href="{{route('teme_korisnika', ['id'=>$user->id])}}">Teme</a>
+                <a class="nav-link" href="{{route('teme_korisnika', ['slug'=>$user->slug])}}"><i class="fas fa-list" style="font-size:19px;"></i> Teme <span class="badge badge-primary">{{$count_teme}}</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href="">Komentari</a>
+                <a class="nav-link active" href=""><i class="far fa-comment-dots" style="font-size:19px;"></i> Komentari <span class="badge badge-primary">{{count($komentari)}}</span></a>
             </li>
         </ul>
         @if(count($komentari) > 0) 
@@ -17,22 +18,68 @@
             <div class="col">
                 <div class="card">
                     <div class="card-body">
-                        <div class="mb-4">
-                            <h4><a href="{{route('komentari_na_temu', ['id'=>$komentar->tema->id])}}">{{$komentar->tema->naslov_teme}}</a>
-                                <span><button class="btn btn-success ml-1" type="button" data-toggle="collapse" data-target="#opis-{{$komentar->id}}" aria-expanded="false" aria-controls="collapseExample">
-                                        Opis teme
-                                    </button></span></h4>           
-                            <div class="collapse pt-4" id="opis-{{$komentar->id}}">
-                                <p class="font-italic">{{$komentar->tema->opis_teme}}</p>
-                                
+                        <div class="mb-3">
+                            <h4><a href="{{route('komentari_na_temu', ['slug'=>$komentar->tema->slug])}}">{{$komentar->tema->naslov_teme}}</a>
+                                <span><button class="btn btn-outline-primary ml-1" type="button" data-toggle="collapse" data-target="#opis-{{$komentar->id}}" aria-expanded="false" aria-controls="collapseExample">
+                                    <i class="fas fa-caret-down"></i>
+                                    </button></span></h4>
+                                    <p><span class="text-muted">U kategoriji </span><a href="{{route('teme', ['url' => $komentar->tema->kategorija->url_naziv])}}">{{$komentar->tema->kategorija->naziv_kategorije}}</a></p>         
+                            <div class="collapse mt-2 pt-3" id="opis-{{$komentar->id}}">
+                                <p class="font-italic pb-1">{{$komentar->tema->opis_teme}}</p>   
                             </div>
                         </div>
                         <hr>
-                        <h5 class="font-weight-bold">Komentar:</h5>
-                        <div class="mt-4"><p>{{$komentar->tekst_komentara}}</p></div>
+                        <div class="mt-3"><p><i class="fas fa-comment-alt text-primary" style="font-size: 18px;"> :</i> {{$komentar->tekst_komentara}}</p></div>
                         <p>
                             <b>Datum komentara: </b>
-                            <span class="text-muted font-italic">{{$komentar->created_at->format('d.m.Y. - H:i:s')}}</span>
+                            <span class="text-muted font-italic">
+                                @if($komentar->created_at->isToday())
+                                    Danas u {{$komentar->created_at->format('H:i')}}
+                                @elseif($komentar->created_at->isYesterday())
+                                    Jučer u {{$komentar->created_at->format('H:i')}}
+                                @else
+                                    {{$komentar->created_at->day}}.
+                                    @switch($komentar->created_at->month)
+                                    @case(1)
+                                    Siječanja
+                                    @break
+                                    @case(2)
+                                    Veljače
+                                    @break
+                                    @case(3)
+                                    Ožujka
+                                    @break
+                                    @case(4)
+                                    Travnja
+                                    @break
+                                    @case(5)
+                                    Svibnja
+                                    @break
+                                    @case(6)
+                                    Lipnja
+                                    @break
+                                    @case(7)
+                                    Srpnja
+                                    @break
+                                    @case(8)
+                                    Kolovoza
+                                    @break
+                                    @case(9)
+                                    Rujna
+                                    @break
+                                    @case(10)
+                                    Listopada
+                                    @break
+                                    @case(11)
+                                    Studenog
+                                    @break
+                                    @case(12)
+                                    Prosinca
+                                    @break
+                                    @endswitch
+                                    {{$komentar->created_at->format('Y. \u H:i')}}
+                                @endif
+                            </span>
                         </p>
                     </div>
                 </div>

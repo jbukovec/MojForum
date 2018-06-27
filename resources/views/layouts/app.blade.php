@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>MojForum - @yield('title')</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -16,7 +16,9 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -25,8 +27,9 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
-                    {{ config('app.name', 'MojForum') }}
+                <a class="navbar-brand pb-1" href="{{ url('/') }}">
+                   {{--<div class="mr-2 pb-2 text-secondary" style="font-family: Roboto Slab, serif; font-size:25px;">MojForum</div>--}}
+                   <img style="width:165px;" src="{{asset('storage/mojforum_logo_200x39.png')}}" alt="MojForum Logo">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,8 +38,8 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-                        <li><a class="nav-link" href="{{ route('naslovna') }}">Naslovna</a></li>
-                        <li><a class="nav-link" href="{{ route('zadnje.teme') }}">Zadnje teme</a></li>
+                        <li><a class="nav-link {{url()->current() == route('naslovna') ? 'active' : null }}" href="{{ route('naslovna') }}"><i class="fas fa-home" style="font-size:18px;"></i> Naslovna</a></li>
+                        <li><a class="nav-link {{url()->current() == route('zadnje.teme') ? 'active' : null }}" href="{{ route('zadnje.teme') }}"><i class="fas fa-list-alt" style="font-size:18px;"></i> Zadnje teme</a></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -49,9 +52,9 @@
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     @if (Auth::user()->naziv_slike == 'default.jpg')
-                                        <img style="height:45px;border-radius:50%;margin-right:20px;" src="{{asset('storage/'.Auth::user()->naziv_slike)}}"> 
+                                        <img class="rounded rounded-circle mr-2" style="height:45px;" src="{{asset('storage/'.Auth::user()->naziv_slike)}}"> 
                                     @else
-                                    <img style="height:45px;border-radius:50%;margin-right:20px;" src="{{asset('storage/'.Auth::user()->name.'/'.Auth::user()->naziv_slike)}}">
+                                    <img class="rounded rounded-circle mr-2" style="height:45px;" src="{{asset('storage/'.Auth::user()->slug.'/'.Auth::user()->naziv_slike)}}">
                                     @endif
                                 
                                 
@@ -103,18 +106,16 @@
                 </div>
             	@endif
         </div>
-
-        <main class="py-4" style="min-height: 85vh;">
+        <main class="py-1" style="min-height: 85vh;">
             @yield('content')
         </main>
     </div>
     <div class="container-fluid">
-    <div class="row bg-light shadow p-3">
-        <div class="col mt-2 text-secondary text-center">
-            <p class="h6"><a class="text-dark font-weight-bold pr-3" href="{{route('naslovna')}}">MojForum</a>{{date('Y').'.'}} &copy Sva prava pridržana.</p>
-        </div>
-    </div>	
+        <div class="row bg-light shadow p-3">
+            <div class="col mt-2 text-secondary text-center">
+                <p class="h6"><a class="text-dark font-weight-bold" href="{{route('naslovna')}}">MojForum</a>&copy  {{date('Y').'.'}} Sva prava pridržana.</p>
+            </div>
+        </div>	
     </div>
-</section>
 </body>
 </html>

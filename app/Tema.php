@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Searchable;
+use Cviebrock\EloquentSluggable\Sluggable;
 
 class Tema extends Model
 {
     use Searchable;
+    use Sluggable;
 
     protected $table = 'teme';
     
@@ -34,5 +36,14 @@ class Tema extends Model
         // Customize array...
 
         return $array;
+    }
+
+    public function sluggable()
+    {
+        return [
+            'slug' => [
+                'source' => 'naslov_teme'
+            ]
+        ];
     }
 }

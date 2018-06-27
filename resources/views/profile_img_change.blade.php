@@ -1,4 +1,5 @@
 @extends('layouts.app') 
+@section('title', 'Slike profila')
 @section('content')
 <div class="container-fluid">
 <h2 class="mb-2 p-4 text-center">Odaberite sliku s Vašeg računala</h2>
@@ -10,11 +11,10 @@
                 {{-- {{Form::hidden('_method','PUT')}} --}} 
                  </div>
                 {!!Form::close()!!}
-                </div>
             </div>   
                 @if(count($slike_profila)>0)
                 <h2 class="mb-2 p-4 mt-4 text-center">Ili odabarite neku od Vaših prijašnjih slika profila. </h2>
-                <div style="margin-top:25px;" class="row">
+                <div style="margin-top:25px;" class="row p-3">
                 @unless (Auth::user()->naziv_slike == 'default.jpg')
                 <div class="col-md-4">
                     {!!Form::open(['route'=>'postavi.img','method'=>'PUT'])!!}
@@ -34,7 +34,7 @@
                     <div class="col-md-4">
                         {!!Form::open(['route'=>'postavi.img','method'=>'PUT'])!!}
                         <div class="text-center thumbnail">
-                            <img class="rounded" style="max-width:400px; width:100%;" src="{{asset('storage/'.Auth::user()->name.'/'.$item->naziv_profilne_slike)}}">
+                            <img class="rounded" style="max-width:400px; width:100%;" src="{{asset('storage/'.Auth::user()->slug.'/'.$item->naziv_profilne_slike)}}">
                         
                         {{Form::hidden('profilna_slika',$item->naziv_profilne_slike)}}
                             <div style="margin-bottom: 20px; margin-top:10px;" class="text-center">
@@ -48,10 +48,10 @@
                         {!!Form::close()!!}
                             </div>                 
                         </div>
-                    </div>
-                       
+                    </div>            
                     @endif             
                 @endforeach
                 @endif
     </div> 
+</div>    
 @endsection

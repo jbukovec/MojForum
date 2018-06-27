@@ -32,7 +32,12 @@ class DashboardController extends Controller
      */
     public function panel()
     {
-            $teme_novi_komentari = Auth::user()->teme()->with(['komentari' => function($q){$q->where('pogledano', false)->where('user_id','!=', Auth::id());}])->whereHas('komentari', function($q){$q->where('pogledano', false)->where('user_id','!=', Auth::id());})->get();
+            $teme_novi_komentari = Auth::user()->teme()->with(['komentari' => function($q){
+                $q->where('pogledano', false)->where('user_id','!=', Auth::id());
+            }])->whereHas('komentari', function($q){
+                $q->where('pogledano', false)->where('user_id','!=', Auth::id());
+            })->get();
+
             return view('panel')->with('teme_novi_komentari',$teme_novi_komentari);
     }
 
@@ -53,14 +58,15 @@ class DashboardController extends Controller
             /*$request->validate(['image'=>'image|max:1999']);*/
 
             Validator::make($request->all(), [
-                'image' => 'image',
+                'image' => 'image|max:1999',
             ],
             [
-                'image' => 'Datoteka koju ste izabrali nije slika!.',
+                'image' => 'Datoteka koju odaberete mora biti slika i ne smije biti veća od 2 MB!',
             ])->validate();
 
             $img = $request->file('image');
-            $img_name = pathinfo($img->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.jpg';
+            $img_name = str_replace(' ', '_', substr(pathinfo($img->getClientOriginalName(), PATHINFO_FILENAME), 0, 50));
+            $img_name = str_replace(['č', 'ć', 'ž', 'š', 'đ'], ['c', 'c', 'z', 's', 'd'], $img_name) . '_' . time() . '.jpg';
             Image::make($img)->fit(400, 400)->save('storage/' . Auth::user()->name . '/' . $img_name);
             $user = Auth::user();
             $user->naziv_slike = $img_name;
@@ -125,20 +131,34 @@ class DashboardController extends Controller
     }  
 
     function napravi_kategoriju(Request $request)
-    {
-
-        $request->validate([
-            'naziv' => 'required',
-        ]);
-
+    {   
         if (Auth::user()->is_admin == 1) {
+        $url_naziv = str_replace(['č', 'ć', 'ž', 'š', 'đ'], ['c', 'c', 'z', 's', 'd'], strtolower($request->naziv));
+        $url_naziv = preg_replace('([^a-zA-Z0-9\']+)', '-', $url_naziv);
+        $url_naziv = str_replace("'",'', $url_naziv);
+        if ($url_naziv[strlen($url_naziv) - 1] == '-') {
+            $url_naziv[strlen($url_naziv) - 1] = '';
+        }
+        $request->merge(['url_naziv'=> $url_naziv]);
+
+        Validator::make($request->all(), [
+            'naziv' => 'required|unique:kategorije,naziv_kategorije|unique:kategorije,url_naziv',
+            'url_naziv' => 'required|unique:kategorije,url_naziv',
+        ],
+        [   'naziv.required' => 'Naziv kategorije je obavezan!',
+            'naziv.unique' => 'Naziv kategorije već postoji. Naziv kategorije mora biti jedinstven!',
+            'url_naziv.required' => 'Url kategorije je obavezan!',
+            'url_naziv.unique' => 'Url kategorije već postoji. Url kategorije mora biti jedinstvena vrijednost!',
+        ])->validate();
+
         $nova_kategorija = new Kategorija();
         $nova_kategorija->naziv_kategorije = $request->naziv;
-        $url_naziv = str_replace(' ', '_', strtolower($request->naziv));
-        $url_naziv = str_replace(['č', 'ć', 'ž', 'š', 'đ'], ['c', 'c', 'z', 's', 'd'], $url_naziv);
-        $nova_kategorija->url_naziv = $url_naziv; 
+        $nova_kategorija->url_naziv = $request->url_naziv; 
         $nova_kategorija->save();
         return redirect()->back()->with('status', 'Nova kategorija je uspješno napravljena!');
+        }
+        else {
+            return redirect()->back()->with('error', 'Nemate dozvole super administratora!');
         }
     }
     function izbrisi_kategoriju($id)
@@ -149,10 +169,10 @@ class DashboardController extends Controller
             return redirect()->back()->with('status', 'Kategorija je uspješno izbrisna!');
         }
     }
-    function komentari_zadnja($id)
-    {
-        $komentari = Komentar::with('user')->where('tema_id', $id)->orderBy('created_at', 'asc')->paginate(15);
-        return redirect('tema/'. $id .'/komentari' . '?page=' . $komentari->lastPage());
+    function komentari_zadnja($slug)
+    {   $tema = Tema::where('slug', $slug)->firstOrFail();
+        $zadnja = Komentar::where('tema_id', $tema->id)->orderBy('created_at', 'asc')->paginate(15)->lastPage();
+        return redirect('tema/'. $slug . '?page=' . $zadnja);
     }
 
 }

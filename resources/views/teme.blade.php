@@ -21,7 +21,8 @@
             {{Form::label('opis','Opis teme', ['class' => 'mt-1'])}}
             {{Form::textarea('opis',null,['class'=>'form-control','rows'=>'10','id'=>'info','placeholder'=>'Unesite dodatni opis za temu.'])}}
         </div>
-        {{Form::submit('Postavi temu',['class'=>'btn btn-primary'])}} {!!Form::close()!!}
+        {{Form::submit('Napravi temu',['class'=>'btn btn-primary'])}}
+        {!!Form::close()!!}
     </div>
     @else
     
@@ -31,28 +32,31 @@
     @if (is_int($id))
         @if ($id > 0)
             <h2>Teme u kategoriji {{$teme[0]->kategorija->naziv_kategorije}}</h2>
+            @section('title', 'Teme u kategoriji '.$teme[0]->kategorija->naziv_kategorije)
         @else
             <h2>Zadnje teme</h2>
+            @section('title', 'Zadnje teme')
         @endif
     @else
     <h2>Rezultati pretrage za "{{$id}}"</h2>    
+    @section('title', 'Rezultati pretrage za "'.$id.'"')
     @endif    
-    <div class="my-3 p-3 bg-white rounded box-shadow">
+    <div class="my-3 p-3 bg-white rounded shadow-sm">
         @foreach ($teme as $tema)
         <div class="row mb-3">
-            <div class="col-md-2 col-sm-2 col-2">
-                <div>
+            <div class="col-md-2 col-sm-2 p-0 pl-3 d-none d-sm-block">
+                <a href="{{route('teme_korisnika', ['id'=>$tema->user->id])}}">
                     @if ($tema->user->naziv_slike == 'default.jpg')
                     <img style="max-width: 160px; min-width:50px; width:100%;" class="rounded profil-img" src="{{asset('storage/'. $tema->user->naziv_slike)}}">                    
                     @else
-                    <img class="rounded" style="max-width: 160px; min-width:50px; width:100%;" src="{{asset('storage/'.$tema->user->name.'/'. $tema->user->naziv_slike)}}">                    
+                    <img class="rounded" style="max-width: 160px; min-width:50px; width:100%;" src="{{asset('storage/'.$tema->user->slug.'/'. $tema->user->naziv_slike)}}">                    
                     @endif
-                </div>
+                </a>
             </div>
-            <div class="col-md-10 col-sm-10 col-10">
+            <div class="col-md-10 col-sm-10 col-12">
                 <div class="card">
                     <div class="card-body">
-                        <a href="{{route('komentari_na_temu', ['id'=> $tema->id])}}">
+                        <a href="{{route('komentari_na_temu', ['slug'=> $tema->slug])}}">
                             <h3>{{$tema->naslov_teme}}</h3>
                         </a>
                         @if (strlen($tema->opis_teme)>200)
@@ -62,15 +66,61 @@
                         @endif
                     </div>
                 </div>
-                @if (count($tema->komentari)
-                < 1) <h5><span class="badge badge-danger">Još nema komentara</span></h5><span class="text-muted font-italic">Budite prvi koji će ostaviti komentar</span>                    
+                @if (count($tema->komentari) < 1) <h5><span class="badge badge-danger mt-1">Još nema komentara</span></h5><span class="text-muted font-italic">Budite prvi koji će ostaviti komentar</span>                    
                 @else
-                    <h5><span class="badge badge-success">Komentara: {{count($tema->komentari)}}</span></h5>
+                    <h5><span class="badge badge-success mt-1"><i class="fas fa-comment-alt"></i> &nbsp; Komentara: {{count($tema->komentari)}}</span></h5>
                 @endif
             </div>
         </div>
-        <p> Objavio korisnik <a href="{{route('teme_korisnika', ['id'=>$tema->user->id])}}" class="mt-2 pt-2 pb-2">{{$tema->user->name}}</a><span> | </span><b>Datum objave: </b>
-            <small class="text-muted">{{$tema->created_at->format('d.m.Y. - H:i:s')}}</small>
+        <p>Objavio korisnik <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}" class="mt-2 pt-2 pb-2">{{$tema->user->name}}</a> @if (! is_int($id)) u kategoriji <a href="{{route('teme', ['url' => $tema->kategorija->url_naziv])}}">{{$tema->kategorija->naziv_kategorije}}</a> @endif <span> | </span><b>Datum objave: </b>
+            <span class="text-muted">
+            @if($tema->created_at->isToday())
+                Danas u {{$tema->created_at->format('H:i')}}
+            @elseif($tema->created_at->isYesterday())
+                Jučer u {{$tema->created_at->format('H:i')}}
+            @else
+                {{$tema->created_at->day}}.
+                @switch($tema->created_at->month)
+                @case(1)
+                Siječanja
+                @break
+                @case(2)
+                Veljače
+                @break
+                @case(3)
+                Ožujka
+                @break
+                @case(4)
+                Travnja
+                @break
+                @case(5)
+                Svibnja
+                @break
+                @case(6)
+                Lipnja
+                @break
+                @case(7)
+                Srpnja
+                @break
+                @case(8)
+                Kolovoza
+                @break
+                @case(9)
+                Rujna
+                @break
+                @case(10)
+                Listopada
+                @break
+                @case(11)
+                Studenog
+                @break
+                @case(12)
+                Prosinca
+                @break
+                @endswitch
+                {{$tema->created_at->format('Y. \u H:i')}}
+            @endif
+            </span>
         </p>
         <hr> 
         @endforeach
@@ -87,8 +137,8 @@
     </div>
     @else
     <div class="alert alert-warning" role="alert">
-            Nema rezultata pretrage za "{{$id}}". 
-     </div>
+        Nema rezultata pretrage za "{{$id}}". 
+    </div>
     @endif
     @endif
 </div>

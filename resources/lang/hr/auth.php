@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'failed' => 'Neuspjeh! Ovi podaci ne odgovaraju našim zapisima.',
+    'failed' => 'Neuspjeh! Podaci koje ste unjeli nisu ispravni.',
     'throttle' => 'Previše pokušaja logiranja na stranicu. Molimo Vas ponovno pokušajte za :seconds sekundi.',
 
 ];

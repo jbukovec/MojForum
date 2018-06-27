@@ -16,7 +16,7 @@ class CreateKategorijeTable extends Migration
         Schema::create('kategorije', function (Blueprint $table) {
             $table->increments('id');
             $table->string('naziv_kategorije');
-            $table->string('url_naziv');
+            $table->string('url_naziv')->unique();
             $table->timestamps();
         });
     }

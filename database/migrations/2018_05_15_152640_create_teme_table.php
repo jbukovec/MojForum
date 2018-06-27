@@ -15,8 +15,9 @@ class CreateTemeTable extends Migration
     {
         Schema::create('teme', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('naslov_teme');
-            $table->text('opis_teme');
+            $table->string('naslov_teme')->unique();
+            $table->string('slug');
+            $table->text('opis_teme')->nullable();
             $table->unsignedInteger('kategorija_id');
             $table->unsignedInteger('user_id');
             $table->timestamps();

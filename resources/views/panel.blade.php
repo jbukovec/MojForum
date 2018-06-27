@@ -1,4 +1,5 @@
-@extends('layouts.app') 
+@extends('layouts.app')
+@section('title', 'Korisnički panel')
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -14,7 +15,7 @@
                             @if (Auth::user()->naziv_slike == 'default.jpg')
                             <img style="max-width:225px;border-radius:50%;min-width:65px;width:100%;" src="{{asset('storage/'.Auth::user()->naziv_slike)}}">
                             @else
-                            <img style="max-width:225px;border-radius:50%;min-width:65px;width:100%;" src="{{asset('storage/'.Auth::user()->name.'/'.Auth::user()->naziv_slike)}}">
+                            <img style="max-width:225px;border-radius:50%;min-width:65px;width:100%;" src="{{asset('storage/'.Auth::user()->slug.'/'.Auth::user()->naziv_slike)}}">
                             @endif
                                 <div class="mt-3 text-center">
                                     <h3>{{Auth::user()->name}}</h3>
@@ -31,7 +32,7 @@
                     <ul class="list-group">
                     @foreach ($teme_novi_komentari as $tema)
                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <a href="{{route('komentari.zadnja', ['id' => $tema->id])}}">{{$tema->naslov_teme}}</a>
+                            <a href="{{route('komentari.zadnja', ['id' => $tema->slug])}}">{{$tema->naslov_teme}}</a>
                             <span class="badge badge-primary badge-pill">{{count($tema->komentari)}}</span>
                         </li>
                     @endforeach

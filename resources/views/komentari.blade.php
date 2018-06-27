@@ -1,4 +1,5 @@
-@extends('layouts.app') 
+@extends('layouts.app')
+@section('title', 'Komentari na temu')
 @section('content')
 <div class="container">
     <div class="card bg-light text-dark">
@@ -9,14 +10,14 @@
             <p class="text-body mt-1 p-2" style="font-size:18px;">{{$tema->opis_teme}}</p>
             <div class="d-flex justify-content-end mt-2 pt-4">
                 <div class="p-2 mt-4 text-right">
-                    <a href="">{{$tema->user->name}}</a> 
+                    <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}">{{$tema->user->name}}</a> 
                     <p class="text-muted"><b>Objavljeno: </b>{{$tema->created_at->format('d.m.Y.')}}</p>
                 </div>   
                 <div>
                     @if ($tema->user->naziv_slike == 'default.jpg')
                         <img class="rounded" style="width: 80px;" src="{{asset('storage/'. $tema->user->naziv_slike)}}">               
                     @else
-                        <img class="rounded" style="width: 80px;" src="{{asset('storage/'.$tema->user->name.'/'. $tema->user->naziv_slike)}}">                
+                        <img class="rounded" style="width: 80px;" src="{{asset('storage/'.$tema->user->slug.'/'. $tema->user->naziv_slike)}}">                
                     @endif
                  </div>           
             </div>
@@ -25,20 +26,79 @@
         @if (count($komentari)>0)
         @foreach ($komentari as $komentar)
     	    <div class="row mt-4">
-            <div class="col-2" style="max-width: 115px;">               
-                <div>
+            <div class="col-1 p-0 ml-3 d-none d-sm-none d-md-block" style="max-width: 115px;">               
+                <a href="{{route('teme_korisnika', ['id'=>$komentar->user->id])}}">
                     @if ($komentar->user->naziv_slike == 'default.jpg')
                         <img class="rounded" style="min-width: 40px; max-width:85px; width:100%;" src="{{asset('storage/'. $komentar->user->naziv_slike)}}">               
                     @else
-                        <img class="rounded" style="min-width: 40px; max-width:85px; width:100%;" src="{{asset('storage/'.$komentar->user->name.'/'. $komentar->user->naziv_slike)}}">                
+                        <img class="rounded" style="min-width: 40px; max-width:85px; width:100%;" src="{{asset('storage/'.$komentar->user->slug.'/'. $komentar->user->naziv_slike)}}">                
                     @endif
-                    </div></div>
+                </a>
+            </div>
                 <div class="col">
                     <div class="card p-3">
-                    <a class="font-weight-bold" href="{{route('teme_korisnika', ['id'=>$komentar->user->id])}}">{{$komentar->user->name}}</a>
+                    <a class="font-weight-bold" href="{{route('teme_korisnika', ['id'=>$komentar->user->id])}}">
+                        <div class="media pb-1"><span class="pr-2 d-block d-sm-block d-md-none">
+                            @if ($komentar->user->naziv_slike == 'default.jpg')
+                                <img class="rounded rounded-circle mr-2" style="width: 50px;" src="{{asset('storage/'. $komentar->user->naziv_slike)}}">               
+                            @else
+                                <img class="rounded rounded-circle mr-2" style="width: 50px;" src="{{asset('storage/'.$komentar->user->slug.'/'. $komentar->user->naziv_slike)}}">                
+                            @endif
+                        </span>
+                        <div class="media-body pt-2 d-block d-sm-block d-md-none">@if($komentar->user->id != $tema->user->id){{$komentar->user->name}}@else<span class="badge badge-primary" style="font-size: 13px;">{{$komentar->user->name}}</span>@endif</div>
+                        <div class="media-body d-none d-md-block">@if($komentar->user->id != $tema->user->id){{$komentar->user->name}}@else<span class="badge badge-primary" style="font-size: 13px;">{{$komentar->user->name}}</span>@endif</div>
+                    </div>
+                    </a>
                     <p class="m-1 p-1 font-weight-light font-italic">{{$komentar->tekst_komentara}}</p>
                     <hr>
-                    <p class="text-muted font-italic"><b>Objavljeno: </b>{{$komentar->created_at->format('d.m.Y. - H:i:s')}}</p>
+                    <p class="text-muted font-italic"><b><i class="far fa-clock" style="font-size: 16px;"></i> </b>
+                    @if($komentar->created_at->isToday())
+                        Danas u {{$komentar->created_at->format('H:i')}}
+                    @elseif($komentar->created_at->isYesterday())
+                        Jučer u {{$komentar->created_at->format('H:i')}}
+                    @else
+                        {{$komentar->created_at->day}}.
+                        @switch($komentar->created_at->month)
+                        @case(1)
+                        Siječanja
+                        @break
+                        @case(2)
+                        Veljače
+                        @break
+                        @case(3)
+                        Ožujka
+                        @break
+                        @case(4)
+                        Travnja
+                        @break
+                        @case(5)
+                        Svibnja
+                        @break
+                        @case(6)
+                        Lipnja
+                        @break
+                        @case(7)
+                        Srpnja
+                        @break
+                        @case(8)
+                        Kolovoza
+                        @break
+                        @case(9)
+                        Rujna
+                        @break
+                        @case(10)
+                        Listopada
+                        @break
+                        @case(11)
+                        Studenog
+                        @break
+                        @case(12)
+                        Prosinca
+                        @break
+                        @endswitch
+                        {{$komentar->created_at->format('Y. \u H:i')}}
+                    @endif
+                    </p>
                     </div>
                 </div>
             </div>
@@ -61,7 +121,8 @@
                 {{Form::label('komentar','Tekst komentara',['class'=>'p-1 mb-2'])}}   
                 {{Form::textarea('komentar',null,['class'=>'form-control','rows'=>'8','id'=>'info','placeholder'=>'Unesite Vaš komentar.'])}}
                 </div>
-                {{Form::submit('Komentiraj',['class'=>'btn btn-primary'])}}
+                {{--{{Form::submit('Komentiraj',['class'=>'btn btn-primary'])}}--}}
+                {{ Form::button('<i class="fab fa-telegram-plane" aria-hidden="true"></i> Komentiraj', ['class' => 'btn btn-primary', 'type' => 'submit']) }}
                 {!!Form::close()!!}
             </div>
         @endauth
