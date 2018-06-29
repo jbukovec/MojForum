@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Tema;
 use App\Kategorija;
 use App\Komentar;
+use Illuminate\Support\Facades\Response;
 
 class DashboardController extends Controller
 {
@@ -133,20 +134,26 @@ class DashboardController extends Controller
     function napravi_kategoriju(Request $request)
     {   
         if (Auth::user()->is_admin == 1) {
-        $url_naziv = str_replace(['č', 'ć', 'ž', 'š', 'đ'], ['c', 'c', 'z', 's', 'd'], strtolower($request->naziv));
-        $url_naziv = preg_replace('([^a-zA-Z0-9\']+)', '-', $url_naziv);
-        $url_naziv = str_replace("'",'', $url_naziv);
-        if ($url_naziv[strlen($url_naziv) - 1] == '-') {
-            $url_naziv[strlen($url_naziv) - 1] = '';
-        }
-        $request->merge(['url_naziv'=> $url_naziv]);
 
         Validator::make($request->all(), [
             'naziv' => 'required|unique:kategorije,naziv_kategorije|unique:kategorije,url_naziv',
-            'url_naziv' => 'required|unique:kategorije,url_naziv',
         ],
         [   'naziv.required' => 'Naziv kategorije je obavezan!',
             'naziv.unique' => 'Naziv kategorije već postoji. Naziv kategorije mora biti jedinstven!',
+        ])->validate();
+
+        $url_naziv = strtolower(str_replace(['Č', 'Ć', 'Ž', 'Š', 'Đ', 'č', 'ć', 'ž', 'š', 'đ'], ['C', 'C', 'Z', 'S', 'D', 'c', 'c', 'z', 's', 'd'], $request->naziv));
+        $url_naziv = preg_replace('([^a-zA-Z0-9\']+)', '-', $url_naziv);
+        $url_naziv = str_replace("'",'', $url_naziv);        
+        if ($url_naziv[strlen($url_naziv) - 1] == '-') {
+            $url_naziv = substr_replace($url_naziv, "", -1);
+        }        
+        $request->merge(['url_naziv'=> $url_naziv]);
+
+        Validator::make($request->all(), [
+            'url_naziv' => 'required|unique:kategorije,url_naziv',
+        ],
+        [
             'url_naziv.required' => 'Url kategorije je obavezan!',
             'url_naziv.unique' => 'Url kategorije već postoji. Url kategorije mora biti jedinstvena vrijednost!',
         ])->validate();
@@ -161,10 +168,31 @@ class DashboardController extends Controller
             return redirect()->back()->with('error', 'Nemate dozvole super administratora!');
         }
     }
-    function izbrisi_kategoriju($id)
+
+    public function kategorija_postoji(Request $request){
+        if (Auth::user()->is_admin == 1) {
+            $url_naziv = strtolower(str_replace(['Č', 'Ć', 'Ž', 'Š', 'Đ', 'č', 'ć', 'ž', 'š', 'đ'], ['C', 'C', 'Z', 'S', 'D', 'c', 'c', 'z', 's', 'd'], $request->naziv));
+            $url_naziv = preg_replace('([^a-zA-Z0-9\']+)', '-', $url_naziv);
+            $url_naziv = str_replace("'",'', $url_naziv);        
+            if ($url_naziv[strlen($url_naziv) - 1] == '-') {
+                $url_naziv = substr_replace($url_naziv, "", -1);
+            }   
+
+            $kategorija = Kategorija::where('naziv_kategorije', $request->naziv)->count();
+            $url = Kategorija::where('url_naziv', $url_naziv)->count();
+            if($kategorija != 0 || $url != 0){
+                return Response::json(['postoji' => true]);
+            }
+            else {
+                return Response::json(['postoji' => false]);
+            }
+        }
+    }
+
+    function izbrisi_kategoriju(Request $request)
     {
         if (Auth::user()->is_admin == 1) {
-            $kategorija = Kategorija::findOrFail($id);
+            $kategorija = Kategorija::findOrFail($request->id_kategorije);
             $kategorija->delete();
             return redirect()->back()->with('status', 'Kategorija je uspješno izbrisna!');
         }

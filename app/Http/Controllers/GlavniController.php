@@ -114,4 +114,28 @@ class GlavniController extends Controller
         $teme->load('komentari', 'user');
         return view('teme')->with('teme', $teme)->with('id', $request->q);
     }
+
+    public function izbrisi_temu(Request $request)
+    {   
+        $tema = Tema::findOrFail($request->id_teme);
+        if(Auth::user()->id == $tema->user_id || Auth::user()->is_admin == true){
+        $tema->delete();
+        return redirect()->back()->with('status', 'Tema je uspješno izbrisana!');
+        }
+        else{
+            return redirect()->back()->with('error', 'Nemate ovlasti za brisanje ove teme!');
+        }
+    }
+    
+    public function izbrisi_komentar(Request $request)
+    {   
+        $komentar = Komentar::findOrFail($request->id_komentara);
+        if(Auth::user()->id == $komentar->user_id || Auth::user()->is_admin == true){
+        $komentar->delete();
+        return redirect()->back()->with('status', 'Komentar je uspješno izbrisan!');
+        }
+        else{
+            return redirect()->back()->with('error', 'Nemate ovlasti za brisanje ovg komentara!');
+        }
+    }
 }

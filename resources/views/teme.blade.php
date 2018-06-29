@@ -55,7 +55,7 @@
             </div>
             <div class="col-md-10 col-sm-10 col-12">
                 <div class="card">
-                    <div class="card-body">
+                    <div class="card-body pb-2">
                         <a href="{{route('komentari_na_temu', ['slug'=> $tema->slug])}}">
                             <h3>{{$tema->naslov_teme}}</h3>
                         </a>
@@ -64,7 +64,15 @@
                         @else
                         <p class="font-italic">{{$tema->opis_teme}}</p>
                         @endif
+                    
                     </div>
+                    @auth
+                        @if(Auth::user()->id == $tema->user_id || Auth::user()->is_admin == true)
+                        <div class="p-2">
+                            <button class="btn btn-outline-danger btn-sm float-right" style="border-color: transparent;" data-toggle="modal" data-target="#deleteModal" data-temaid="{{$tema->id}}" data-temanaslov="{{$tema->naslov_teme}}"><i class="fas fa-times"></i> <b>Izbriši temu</b></button>
+                        </div>
+                        @endif
+                    @endauth
                 </div>
                 @if (count($tema->komentari) < 1) <h5><span class="badge badge-danger mt-1">Još nema komentara</span></h5><span class="text-muted font-italic">Budite prvi koji će ostaviti komentar</span>                    
                 @else
@@ -73,54 +81,7 @@
             </div>
         </div>
         <p>Objavio korisnik <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}" class="mt-2 pt-2 pb-2">{{$tema->user->name}}</a> @if (! is_int($id)) u kategoriji <a href="{{route('teme', ['url' => $tema->kategorija->url_naziv])}}">{{$tema->kategorija->naziv_kategorije}}</a> @endif <span> | </span><b>Datum objave: </b>
-            <span class="text-muted">
-            @if($tema->created_at->isToday())
-                Danas u {{$tema->created_at->format('H:i')}}
-            @elseif($tema->created_at->isYesterday())
-                Jučer u {{$tema->created_at->format('H:i')}}
-            @else
-                {{$tema->created_at->day}}.
-                @switch($tema->created_at->month)
-                @case(1)
-                Siječanja
-                @break
-                @case(2)
-                Veljače
-                @break
-                @case(3)
-                Ožujka
-                @break
-                @case(4)
-                Travnja
-                @break
-                @case(5)
-                Svibnja
-                @break
-                @case(6)
-                Lipnja
-                @break
-                @case(7)
-                Srpnja
-                @break
-                @case(8)
-                Kolovoza
-                @break
-                @case(9)
-                Rujna
-                @break
-                @case(10)
-                Listopada
-                @break
-                @case(11)
-                Studenog
-                @break
-                @case(12)
-                Prosinca
-                @break
-                @endswitch
-                {{$tema->created_at->format('Y. \u H:i')}}
-            @endif
-            </span>
+            @include('includes.datum_postavljanja_teme')
         </p>
         <hr> 
         @endforeach
@@ -142,4 +103,5 @@
     @endif
     @endif
 </div>
+@include('includes.izbrisi_temu_modal')
 @endsection

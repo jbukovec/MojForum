@@ -11,7 +11,7 @@
             <div class="d-flex justify-content-end mt-2 pt-4">
                 <div class="p-2 mt-4 text-right">
                     <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}">{{$tema->user->name}}</a> 
-                    <p class="text-muted"><b>Objavljeno: </b>{{$tema->created_at->format('d.m.Y.')}}</p>
+                    <p class="text-muted">@include('includes.datum_postavljanja_teme')</p>
                 </div>   
                 <div>
                     @if ($tema->user->naziv_slike == 'default.jpg')
@@ -27,7 +27,7 @@
         @foreach ($komentari as $komentar)
     	    <div class="row mt-4">
             <div class="col-1 p-0 ml-3 d-none d-sm-none d-md-block" style="max-width: 115px;">               
-                <a href="{{route('teme_korisnika', ['id'=>$komentar->user->id])}}">
+                <a href="{{route('teme_korisnika', ['slug'=>$komentar->user->slug])}}">
                     @if ($komentar->user->naziv_slike == 'default.jpg')
                         <img class="rounded" style="min-width: 40px; max-width:85px; width:100%;" src="{{asset('storage/'. $komentar->user->naziv_slike)}}">               
                     @else
@@ -37,7 +37,7 @@
             </div>
                 <div class="col">
                     <div class="card p-3">
-                    <a class="font-weight-bold" href="{{route('teme_korisnika', ['id'=>$komentar->user->id])}}">
+                    <a class="font-weight-bold" href="{{route('teme_korisnika', ['slug'=>$komentar->user->slug])}}">
                         <div class="media pb-1"><span class="pr-2 d-block d-sm-block d-md-none">
                             @if ($komentar->user->naziv_slike == 'default.jpg')
                                 <img class="rounded rounded-circle mr-2" style="width: 50px;" src="{{asset('storage/'. $komentar->user->naziv_slike)}}">               
@@ -51,7 +51,13 @@
                     </a>
                     <p class="m-1 p-1 font-weight-light font-italic">{{$komentar->tekst_komentara}}</p>
                     <hr>
-                    <p class="text-muted font-italic"><b><i class="far fa-clock" style="font-size: 16px;"></i> </b>
+                    <div>
+                    @auth
+                        @if(Auth::user()->id == $komentar->user_id || Auth::user()->is_admin == true)
+                            <button class="btn btn-outline-danger btn-sm float-right d-none d-sm-block" style="border-color: transparent;" data-toggle="modal" data-target="#deleteModal" data-idkomentara="{{$komentar->id}}"><i class="fas fa-times"></i> <b>Izbriši komentar</b></button>
+                        @endif
+                    @endauth
+                    <p class="text-muted font-italic mb-0"><b><i class="far fa-clock" style="font-size: 16px;"></i> </b>
                     @if($komentar->created_at->isToday())
                         Danas u {{$komentar->created_at->format('H:i')}}
                     @elseif($komentar->created_at->isYesterday())
@@ -99,6 +105,12 @@
                         {{$komentar->created_at->format('Y. \u H:i')}}
                     @endif
                     </p>
+                    @auth
+                        @if(Auth::user()->id == $komentar->user_id || Auth::user()->is_admin == true)
+                            <button class="btn btn-outline-danger btn-sm float-left d-block d-sm-none mt-3" style="border-color: transparent;" data-toggle="modal" data-target="#deleteModal" data-idkomentara="{{$komentar->id}}"><i class="fas fa-times"></i> <b>Izbriši komentar</b></button>
+                        @endif
+                    @endauth
+                    </div>
                     </div>
                 </div>
             </div>
@@ -133,6 +145,6 @@ Da bi ste sudjelovali u raspravi odnosno napravili temu ili komentirali postoje�
 Ukoliko već imate račun, ulogirajte se na stranicu.
 </div>
 @endguest
-
 </div>
+@include('includes.izbrisi_komentar_modal')
 @endsection
