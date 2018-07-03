@@ -24,8 +24,6 @@
         {{Form::submit('Napravi temu',['class'=>'btn btn-primary'])}}
         {!!Form::close()!!}
     </div>
-    @else
-    
     @endif
     @endauth 
     @if(count($teme) > 0)

@@ -58,52 +58,7 @@
                         @endif
                     @endauth
                     <p class="text-muted font-italic mb-0"><b><i class="far fa-clock" style="font-size: 16px;"></i> </b>
-                    @if($komentar->created_at->isToday())
-                        Danas u {{$komentar->created_at->format('H:i')}}
-                    @elseif($komentar->created_at->isYesterday())
-                        Jučer u {{$komentar->created_at->format('H:i')}}
-                    @else
-                        {{$komentar->created_at->day}}.
-                        @switch($komentar->created_at->month)
-                        @case(1)
-                        Siječanja
-                        @break
-                        @case(2)
-                        Veljače
-                        @break
-                        @case(3)
-                        Ožujka
-                        @break
-                        @case(4)
-                        Travnja
-                        @break
-                        @case(5)
-                        Svibnja
-                        @break
-                        @case(6)
-                        Lipnja
-                        @break
-                        @case(7)
-                        Srpnja
-                        @break
-                        @case(8)
-                        Kolovoza
-                        @break
-                        @case(9)
-                        Rujna
-                        @break
-                        @case(10)
-                        Listopada
-                        @break
-                        @case(11)
-                        Studenog
-                        @break
-                        @case(12)
-                        Prosinca
-                        @break
-                        @endswitch
-                        {{$komentar->created_at->format('Y. \u H:i')}}
-                    @endif
+                    @include('includes.datum_komentara')
                     </p>
                     @auth
                         @if(Auth::user()->id == $komentar->user_id || Auth::user()->is_admin == true)

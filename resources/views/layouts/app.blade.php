@@ -18,7 +18,7 @@
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> 
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -28,7 +28,6 @@
         <nav class="navbar navbar-expand-md navbar-light navbar-laravel">
             <div class="container">
                 <a class="navbar-brand pb-1" href="{{ url('/') }}">
-                   {{--<div class="mr-2 pb-2 text-secondary" style="font-family: Roboto Slab, serif; font-size:25px;">MojForum</div>--}}
                    <img style="width:165px;" src="{{asset('storage/mojforum_logo_200x39.png')}}" alt="MojForum Logo">
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,8 +55,7 @@
                                     @else
                                     <img class="rounded rounded-circle mr-2" style="height:45px;" src="{{asset('storage/'.Auth::user()->slug.'/'.Auth::user()->naziv_slike)}}">
                                     @endif
-                                
-                                
+                               
                                 {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 

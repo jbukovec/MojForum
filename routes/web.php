@@ -24,9 +24,8 @@ Route::post('/ostavi_komentar/{id}','GlavniController@ostavi_komentar')->name('o
 Route::get('/korisnik/{slug}','GlavniController@teme_korisnika')->name('teme_korisnika');
 Route::get('/korisnik/{slug}/komentari','GlavniController@komentari_korisnika')->name('komentari_korisnika');
 Route::get('/pretraga','GlavniController@pretrazi_teme')->name('pretrazi.teme');
-Route::get('komentari_zadnja/{slug}', 'DashboardController@komentari_zadnja')->name('komentari.zadnja');
 Auth::routes();
-Route::get('/profil', 'DashboardController@panel')->name('panel');
+Route::get('/panel', 'DashboardController@panel')->name('panel');
 Route::get('/promjena_lozinke', 'DashboardController@promjena_lozinke_form')->name('promjena_lozinke_form');
 Route::post('/promijeni_lozinku', 'DashboardController@promijeni_lozinku')->name('promijeni_lozinku');
 Route::get('/admin_panel', 'DashboardController@admin_panel')->name('admin.panel');
@@ -39,3 +38,4 @@ Route::delete('/izbrisi_kategoriju', 'DashboardController@izbrisi_kategoriju')->
 Route::post('/kategorija_postoji', 'DashboardController@kategorija_postoji')->name('kategorija.postoji');
 Route::delete('/izbrisi_temu', 'GlavniController@izbrisi_temu')->name('izbrisi.temu')->middleware('auth');
 Route::delete('/izbrisi_komentar', 'GlavniController@izbrisi_komentar')->name('izbrisi.komentar')->middleware('auth');
+Route::post('/pogledaj_komentare','DashboardController@pogledano')->name('pogledano');

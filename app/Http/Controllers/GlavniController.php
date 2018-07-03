@@ -80,7 +80,10 @@ class GlavniController extends Controller
         $novi_komentar->tema_id = $id;
         $novi_komentar->user_id = auth()->id();
         $novi_komentar->save();
-        return redirect()->back()->with('status', 'Komentar uspješno objavljen');
+        $tema = Tema::with('komentari')->findOrFail($id);
+        $url = route('komentari_na_temu', ['slug' => $tema->slug]);
+        $count = $tema->komentari()->paginate(15)->lastPage();
+        return redirect($url.'?page='.$count)->with('status', 'Komentar uspješno objavljen');
     }
     public function teme_korisnika($slug)
     {   

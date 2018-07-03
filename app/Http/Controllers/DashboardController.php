@@ -13,6 +13,7 @@ use App\Tema;
 use App\Kategorija;
 use App\Komentar;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -33,13 +34,30 @@ class DashboardController extends Controller
      */
     public function panel()
     {
-            $teme_novi_komentari = Auth::user()->teme()->with(['komentari' => function($q){
-                $q->where('pogledano', false)->where('user_id','!=', Auth::id());
-            }])->whereHas('komentari', function($q){
-                $q->where('pogledano', false)->where('user_id','!=', Auth::id());
-            })->get();
+        $teme_novi_komentari = Auth::user()->teme()->with(['komentari' => function($q){
+            $q->where('pogledano', false)->where('user_id','!=', Auth::id());
+            $q->with('user');
+        }])->whereHas('komentari', function($q){
+            $q->where('pogledano', false)->where('user_id','!=', Auth::id());
+        })->get();
 
             return view('panel')->with('teme_novi_komentari',$teme_novi_komentari);
+    }
+
+    public function pogledano(Request $request){
+        $tema = Tema::find($request->id);
+        if (isset($tema)) { 
+            if($tema->user_id == Auth::id()){
+                $tema->komentari()->where('pogledano', false)->update(['pogledano'=>true]);
+                return response()->json(['success' => true]);
+            }
+            else{
+                return response()->json(['success' => false]);
+            }
+        }
+        else{
+            return response()->json(['success' => false]);
+        }
     }
 
     public function admin_panel()
@@ -197,10 +215,4 @@ class DashboardController extends Controller
             return redirect()->back()->with('status', 'Kategorija je uspješno izbrisna!');
         }
     }
-    function komentari_zadnja($slug)
-    {   $tema = Tema::where('slug', $slug)->firstOrFail();
-        $zadnja = Komentar::where('tema_id', $tema->id)->orderBy('created_at', 'asc')->paginate(15)->lastPage();
-        return redirect('tema/'. $slug . '?page=' . $zadnja);
-    }
-
 }
