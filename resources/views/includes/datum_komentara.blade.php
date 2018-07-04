@@ -42,5 +42,9 @@
             Prosinca
             @break
         @endswitch
-    {{$komentar->created_at->format('Y. \u H:i')}}
+    @if($komentar->created_at->isCurrentYear())
+        {{$komentar->created_at->format(' \u H:i')}}
+    @else
+        {{$komentar->created_at->format('Y. \u H:i')}}
+    @endif
 @endif

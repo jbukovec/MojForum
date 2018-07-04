@@ -43,6 +43,10 @@
             Prosinca
             @break
             @endswitch
+        @if($tema->created_at->isCurrentYear())
+            {{$tema->created_at->format(' \u H:i')}}
+        @else
             {{$tema->created_at->format('Y. \u H:i')}}
+        @endif
         @endif
     </span>            
