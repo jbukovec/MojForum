@@ -149,7 +149,7 @@ class DashboardController extends Controller
         return redirect()->back()->with("status","Uspješno ste promjenili lozinku!");
     }  
 
-    function napravi_kategoriju(Request $request)
+    public function napravi_kategoriju(Request $request)
     {   
         if (Auth::user()->is_admin == 1) {
 
@@ -207,7 +207,7 @@ class DashboardController extends Controller
         }
     }
 
-    function izbrisi_kategoriju(Request $request)
+    public function izbrisi_kategoriju(Request $request)
     {
         if (Auth::user()->is_admin == 1) {
             $kategorija = Kategorija::findOrFail($request->id_kategorije);
@@ -215,4 +215,45 @@ class DashboardController extends Controller
             return redirect()->back()->with('status', 'Kategorija je uspješno izbrisna!');
         }
     }
+
+    public function uredi_kategoriju(Request $request){
+
+        if (Auth::user()->is_admin == 1) {
+
+            Validator::make($request->all(), [
+                'novi_naziv' => 'required|unique:kategorije,naziv_kategorije|unique:kategorije,url_naziv',
+            ],
+            [   'novi_naziv.required' => 'Naziv kategorije je obavezan!',
+                'novi_naziv.unique' => 'Naziv kategorije već postoji. Naziv kategorije mora biti jedinstven!',
+            ])->validate();
+    
+            $url_naziv = strtolower(str_replace(['Č', 'Ć', 'Ž', 'Š', 'Đ', 'č', 'ć', 'ž', 'š', 'đ'], ['C', 'C', 'Z', 'S', 'D', 'c', 'c', 'z', 's', 'd'], $request->novi_naziv));
+            $url_naziv = preg_replace('([^a-zA-Z0-9\']+)', '-', $url_naziv);
+            $url_naziv = str_replace("'",'', $url_naziv);        
+            if ($url_naziv[strlen($url_naziv) - 1] == '-') {
+                $url_naziv = substr_replace($url_naziv, "", -1);
+            }        
+            $request->merge(['url_naziv'=> $url_naziv]);
+    
+            Validator::make($request->all(), [
+                'url_naziv' => 'required|unique:kategorije,url_naziv',
+            ],
+            [
+                'url_naziv.required' => 'Url kategorije je obavezan!',
+                'url_naziv.unique' => 'Url kategorije već postoji. Url kategorije mora biti jedinstvena vrijednost!',
+            ])->validate();
+    
+            $kategorija = Kategorija::findOrFail($request->id_kategorije);
+            $kategorija->naziv_kategorije = $request->novi_naziv;
+            $kategorija->url_naziv = $request->url_naziv;
+            $kategorija->save();
+
+            return redirect()->back()->with('status', 'Naziv kategorije je uspješno promjenjen!');
+            }
+            else {
+                return redirect()->back()->with('error', 'Nemate dozvole super administratora!');
+            }
+
+    }
+
 }

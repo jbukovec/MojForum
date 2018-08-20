@@ -6,10 +6,10 @@
     <div class="my-3 p-3 bg-white rounded shadow-sm">
         <ul class="nav nav-tabs mb-4">
             <li class="nav-item">
-                <a class="nav-link" href="{{route('teme_korisnika', ['slug'=>$user->slug])}}"><i class="fas fa-list" style="font-size:19px;"></i> Teme <span class="badge badge-primary">{{$count_teme}}</span></a>
+                <a class="nav-link" href="{{route('teme_korisnika', ['slug'=>$user->slug])}}"><i class="fas fa-list" style="font-size:19px;"></i> Teme <span class="badge badge-primary">{{$teme_count}}</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active" href=""><i class="far fa-comment-dots" style="font-size:19px;"></i> Komentari <span class="badge badge-primary">{{count($komentari)}}</span></a>
+                <a class="nav-link active" href=""><i class="far fa-comment-dots" style="font-size:19px;"></i> Komentari <span class="badge badge-primary">{{$komentari_count}}</span></a>
             </li>
         </ul>
         @if(count($komentari) > 0) 

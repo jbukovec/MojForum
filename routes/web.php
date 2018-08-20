@@ -34,6 +34,7 @@ Route::put('/postavi_img','DashboardController@set_profile_image')->name('postav
 Route::get('/slika_profila','DashboardController@change_profile_img_link')->name('slika.profila');
 Route::delete('/delete_img','DashboardController@delete_profile_image')->name('delete.img');
 Route::post('/napravi_kategoriju', 'DashboardController@napravi_kategoriju')->name('napravi.kategoriju');
+Route::put('/uredi_kategoriju', 'DashboardController@uredi_kategoriju')->name('uredi.kategoriju');
 Route::delete('/izbrisi_kategoriju', 'DashboardController@izbrisi_kategoriju')->name('izbrisi.kategoriju');
 Route::post('/kategorija_postoji', 'DashboardController@kategorija_postoji')->name('kategorija.postoji');
 Route::delete('/izbrisi_temu', 'GlavniController@izbrisi_temu')->name('izbrisi.temu')->middleware('auth');

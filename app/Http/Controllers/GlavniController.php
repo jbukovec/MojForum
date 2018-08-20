@@ -88,12 +88,15 @@ class GlavniController extends Controller
     public function teme_korisnika($slug)
     {   
         $user = User::where('slug', $slug)->firstOrFail();
-        $teme = Tema::with('komentari')->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(25);
-        $count_komentari = Komentar::where('user_id', $user->id)->count();
+        $teme = Tema::with('komentari')->where('user_id', $user->id)->orderBy('created_at', 'desc');
+        $teme_count = $teme->count();
+        $teme = $teme->paginate(25);
+        $komentari_count = Komentar::where('user_id', $user->id)->count();
 
         $context = [
             'teme' => $teme,
-            'count_komentari' => $count_komentari,
+            'teme_count' => $teme_count,
+            'komentari_count' => $komentari_count,
             'user' => $user,
         ];
         return view('teme_korisnika')->with($context);
@@ -102,11 +105,14 @@ class GlavniController extends Controller
     public function komentari_korisnika($slug)
     {
         $user = User::where('slug', $slug)->firstOrFail();
-        $komentari = Komentar::with('tema.kategorija')->where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(25);
-        $count_teme = Tema::where('user_id', $user->id)->count(); 
+        $komentari = Komentar::with('tema.kategorija')->where('user_id', $user->id)->orderBy('created_at', 'desc');
+        $komentari_count = $komentari->count();
+        $komentari = $komentari->paginate(25);
+        $teme_count = Tema::where('user_id', $user->id)->count(); 
         $context = [
             'komentari' => $komentari,
-            'count_teme' => $count_teme,
+            'komentari_count' => $komentari_count,
+            'teme_count' => $teme_count,
             'user' => $user,
         ];
         return view('komentari_korisnika')->with($context);
