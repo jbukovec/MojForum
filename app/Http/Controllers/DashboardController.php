@@ -14,6 +14,7 @@ use App\Kategorija;
 use App\Komentar;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
+use App\User;
 
 class DashboardController extends Controller
 {
@@ -250,10 +251,39 @@ class DashboardController extends Controller
 
             return redirect()->back()->with('status', 'Naziv kategorije je uspješno promjenjen!');
             }
-            else {
-                return redirect()->back()->with('error', 'Nemate dozvole super administratora!');
+        else {
+            return redirect()->back()->with('error', 'Nemate dozvole super administratora!');
             }
+    }
 
+    public function search_users(Request $request){
+        if($request->has('q')){
+            $user_name = $request->q;
+        }
+        else {
+            $user_name = $request->get('query');
+        }
+        $users = User::search($user_name)->paginate(26);
+        $data = [
+            'users' => $users,
+            'query' => $user_name
+        ];
+        return view('users')->with($data);
+    }
+
+    public function delete_user(Request $request){
+        if(Auth::user()->is_admin == 1){
+        $user = User::findOrFail($request->user_id);
+        $user->delete();
+        $dir_name = "public/".$user->slug;
+        if(Storage::disk('local')->exists($dir_name)){
+            Storage::deleteDirectory($dir_name);
+        }
+        return redirect()->route('admin.panel')->with('status', 'Korisnik uspješno obrisan!');
+        }
+        else {
+            return redirect()->back()->with('error', 'Nemate dozvole super administratora!');
+        }
     }
 
 }

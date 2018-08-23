@@ -8,18 +8,33 @@
             <h2 class="font-weight-bold">{{$tema->naslov_teme}}</h2>
             <hr>
             <p class="text-body mt-1 p-2" style="font-size:18px;">{{$tema->opis_teme}}</p>
-            <div class="d-flex justify-content-end mt-2 pt-4">
-                <div class="p-2 mt-4 text-right">
-                    <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}">{{$tema->user->name}}</a> 
-                    <p class="text-muted">@include('includes.datum_postavljanja_teme')</p>
-                </div>   
+            <div class="d-none d-sm-block">
+                <div class="d-flex justify-content-end mt-2 pt-4">
+                    <div class="p-2 mt-4 text-right">
+                        <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}">{{$tema->user->name}}</a> 
+                        <p class="text-muted">@include('includes.datum_postavljanja_teme')</p>
+                    </div>   
+                    <div>
+                        @if ($tema->user->naziv_slike == 'default.jpg')
+                            <img class="rounded" style="width: 80px;" src="{{asset('storage/'. $tema->user->naziv_slike)}}">               
+                        @else
+                            <img class="rounded" style="width: 80px;" src="{{asset('storage/'.$tema->user->slug.'/'. $tema->user->naziv_slike)}}">                
+                        @endif
+                    </div>           
+                </div>
+            </div>
+            <div class="d-block d-sm-none mt-2 pt-4 text-center">
                 <div>
                     @if ($tema->user->naziv_slike == 'default.jpg')
                         <img class="rounded" style="width: 80px;" src="{{asset('storage/'. $tema->user->naziv_slike)}}">               
                     @else
                         <img class="rounded" style="width: 80px;" src="{{asset('storage/'.$tema->user->slug.'/'. $tema->user->naziv_slike)}}">                
                     @endif
-                 </div>           
+                </div>
+                <div class="pt-2 text-center">
+                    <a href="{{route('teme_korisnika', ['slug'=>$tema->user->slug])}}">{{$tema->user->name}}</a> 
+                    <p class="text-muted">@include('includes.datum_postavljanja_teme')</p>
+                </div>            
             </div>
         </div>
     </div>

@@ -4,9 +4,11 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Cviebrock\EloquentSluggable\Sluggable;
+use Laravel\Scout\Searchable;
 
 class User extends Authenticatable
 {
+    use Searchable;
     use Notifiable;
     use Sluggable;
     /**
@@ -38,6 +40,13 @@ class User extends Authenticatable
     public function komentari()
     {
         return $this->hasMany('App\Komentar');
+    }
+
+    public function toSearchableArray()
+    {
+        //$array = $this->toArray();
+        $array = array_only($this->toArray(), ['id', 'name']);
+        return $array;
     }
 
     public function sluggable()

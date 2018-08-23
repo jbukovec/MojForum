@@ -7,7 +7,17 @@
             <div class="card">
                 <div class="card-header">Administratorska kontrolna ploča</div>
                 <div class="card-body">
-                    <div class="alert alert-info">Logirani ste kao Administrator!</div>      
+                    <div class="alert alert-info">Logirani ste kao Administrator!</div>
+                    <div class="card card-body mt-4 text-primary bg-light border-primary">
+                        <h4>Pretraži korisnika</h4>
+                        {!!Form::open(['route' => 'search.users', 'method' => 'GET'])!!}
+                        <div class="form-group">
+                        {{Form::label('q', 'Naziv korisnika', ['class' => 'pt-2 pl-2'])}}
+                        {{Form::text('q', null, ['class' => 'form-control'])}}
+                        </div>
+                        {{Form::submit('Pretraži', ['class' => 'btn btn-primary'])}}
+                        {!!Form::close()!!}
+                	</div>      
                 <div class="card card-body mt-4 text-primary bg-light border-primary">
                     <h4>Napravi novu kategoriju</h4>
                     {!!Form::open(['route' => 'napravi.kategoriju'])!!}
@@ -20,21 +30,21 @@
                     </div>
                     {{Form::submit('Napravi kategoriju', ['class' => 'btn btn-primary', 'id' => 'napravi-kategoriju', 'disabled'])}}
                     {!!Form::close()!!}
-                </div>    
+ 
                     <div class="row mt-4">
                         @if (count($kategorije) > 0)
                             @foreach ($kategorije as $kategorija)
                             <div class="col-4 mt-2">
-                            <h4>{{$kategorija->naziv_kategorije}}
-                            <span>
+                                <a href="{{route('teme', ['id' => $kategorija->url_naziv])}}"><h4>{{$kategorija->naziv_kategorije}}</h4></a>
+                            <div class="mt-2">
                                 <button class="btn btn-primary" data-toggle="modal" data-target="#editModal" data-katid="{{$kategorija->id}}" data-katnaslov="{{$kategorija->naziv_kategorije}}"><i class="far fa-edit"></i></i></button>
                                 <button class="btn btn-danger" data-toggle="modal" data-target="#deleteModal" data-katid="{{$kategorija->id}}" data-katnaslov="{{$kategorija->naziv_kategorije}}"><i class="fas fa-times"></i></button>
-                            </span>
+                            </div>
                             </div>
                             @endforeach
                         @endif
                     </div>
-                    <hr>
+                </div>
                     </div>
                 </div>
             </div>

@@ -33,6 +33,8 @@ Route::put('/img_up', 'DashboardController@image_upload')->name('image.upload');
 Route::put('/postavi_img','DashboardController@set_profile_image')->name('postavi.img');
 Route::get('/slika_profila','DashboardController@change_profile_img_link')->name('slika.profila');
 Route::delete('/delete_img','DashboardController@delete_profile_image')->name('delete.img');
+Route::get('/search/user', 'DashboardController@search_users')->name('search.users');
+Route::delete('/obrisi_korisnika', 'DashboardController@delete_user')->name('delete.user');
 Route::post('/napravi_kategoriju', 'DashboardController@napravi_kategoriju')->name('napravi.kategoriju');
 Route::put('/uredi_kategoriju', 'DashboardController@uredi_kategoriju')->name('uredi.kategoriju');
 Route::delete('/izbrisi_kategoriju', 'DashboardController@izbrisi_kategoriju')->name('izbrisi.kategoriju');
